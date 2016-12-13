@@ -99,11 +99,16 @@ public class SortingTest {
 
 	static public Player[] getInitialPlayers() {
 
-		Player ajGreen = null;
-		Player odellBeckum = null;
-		Player dezBryant = null;
-
-		odellBeckum = new Player();
+		Player marvinJones = new Player();
+		marvinJones.set_id("4");
+		marvinJones.setFirstName("Marvin");
+		marvinJones.setMiddleName("");
+		marvinJones.setLastName("Jones");
+		marvinJones.setNotes("Average Reciever");
+		marvinJones.setRanking((float) 77.5);
+		marvinJones.setPosition(FootballPosition.WR);
+		
+		Player odellBeckum = new Player();
 		odellBeckum.set_id("1");
 		odellBeckum.setFirstName("Odell");
 		odellBeckum.setLastName("Beckum");
@@ -111,27 +116,28 @@ public class SortingTest {
 		odellBeckum.setRanking((float) 84.3);
 		odellBeckum.setPosition(FootballPosition.WR);
 
-		dezBryant = new Player();
+		Player dezBryant = new Player();
 		dezBryant.set_id("2");
 		dezBryant.setFirstName("Dez");
 		dezBryant.setLastName("Bryant");
-		dezBryant.setNotes("Elite Reciever,");
+		dezBryant.setNotes("Elite Reciever");
 		dezBryant.setRanking((float) 85.3);
 		dezBryant.setPosition(FootballPosition.WR);
 
-		ajGreen = new Player();
+		Player ajGreen = new Player();
 		ajGreen.set_id("3");
 		ajGreen.setFirstName("Adriel");
 		ajGreen.setMiddleName("Jeremiah");
 		ajGreen.setLastName("Green");
-		ajGreen.setNotes("Elite Reciever,");
+		ajGreen.setNotes("Elite Reciever");
 		ajGreen.setRanking((float) 91.3);
 		ajGreen.setPosition(FootballPosition.WR);
 
-		Player[] beans = new Player[3];
+		Player[] beans = new Player[4];
 		beans[0] = odellBeckum;
 		beans[1] = dezBryant;
 		beans[2] = ajGreen;
+		beans[3] = marvinJones;
 
 		return beans;
 

@@ -164,6 +164,7 @@ public class Person extends BaseBean implements Serializable, Comparable<BaseBea
 		sb.append(lastName);
 		sb.append(", nickName=");
 		sb.append(nickName);
+		sb.append("]");
 		sb.append(StringValidator.EOL);
 		sb.append("    ");
 		sb.append(super.toString());

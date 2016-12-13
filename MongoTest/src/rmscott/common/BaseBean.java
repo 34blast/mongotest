@@ -84,7 +84,7 @@ public class BaseBean implements Serializable, Comparable<BaseBean> {
 	public String toString() {
 		StringBuffer sb = new StringBuffer("BaseBean [_id=");
 		sb.append(_id);
-		sb.append("BaseBean [className=");
+		sb.append(", className=");
 		sb.append(this.getClass().getName());
 		sb.append("]");
 		return sb.toString();
