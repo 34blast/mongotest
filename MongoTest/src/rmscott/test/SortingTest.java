@@ -14,6 +14,7 @@ import rmscott.common.PersonComparator;
 import rmscott.football.FootballPosition;
 import rmscott.football.Player;
 import rmscott.football.PlayerComparator;
+import rmscott.util.KeyGenerator;
 
 /**
  * @author rmscott
@@ -61,10 +62,10 @@ public class SortingTest {
 	static public BaseBean[] getInitialBaseBeans() {
 
 		BaseBean base1 = new BaseBean();
-		base1.set_id("1");
+		base1.set_id(KeyGenerator.generateKey());
 
 		BaseBean base2 = new BaseBean();
-		base2.set_id("2");
+		base2.set_id(KeyGenerator.generateKey());
 
 		BaseBean[] beans = new BaseBean[2];
 		beans[0] = base1;
@@ -77,13 +78,13 @@ public class SortingTest {
 	static public Person[] getInitialPersons() {
 
 		Person person1 = new Person();
-		person1.set_id("1");
+		person1.set_id(KeyGenerator.generateKey());
 		person1.setFirstName("Richard");
 		person1.setLastName("Scott");
 		person1.setNickName("R.M.");
 
 		Person person2 = new Person();
-		person2.set_id("2");
+		person2.set_id(KeyGenerator.generateKey());
 		person2.setFirstName("Richard");
 		person2.setMiddleName("Wilson");
 		person2.setLastName("Scott");
@@ -100,7 +101,7 @@ public class SortingTest {
 	static public Player[] getInitialPlayers() {
 
 		Player marvinJones = new Player();
-		marvinJones.set_id("4");
+		marvinJones.set_id(KeyGenerator.generateKey());
 		marvinJones.setFirstName("Marvin");
 		marvinJones.setMiddleName("");
 		marvinJones.setLastName("Jones");
@@ -109,7 +110,7 @@ public class SortingTest {
 		marvinJones.setPosition(FootballPosition.WR);
 		
 		Player odellBeckum = new Player();
-		odellBeckum.set_id("1");
+		odellBeckum.set_id(KeyGenerator.generateKey());
 		odellBeckum.setFirstName("Odell");
 		odellBeckum.setLastName("Beckum");
 		odellBeckum.setNotes("Elite Reciever,");
@@ -117,7 +118,7 @@ public class SortingTest {
 		odellBeckum.setPosition(FootballPosition.WR);
 
 		Player dezBryant = new Player();
-		dezBryant.set_id("2");
+		dezBryant.set_id(KeyGenerator.generateKey());
 		dezBryant.setFirstName("Dez");
 		dezBryant.setLastName("Bryant");
 		dezBryant.setNotes("Elite Reciever");
@@ -125,7 +126,7 @@ public class SortingTest {
 		dezBryant.setPosition(FootballPosition.WR);
 
 		Player ajGreen = new Player();
-		ajGreen.set_id("3");
+		ajGreen.set_id(KeyGenerator.generateKey());
 		ajGreen.setFirstName("Adriel");
 		ajGreen.setMiddleName("Jeremiah");
 		ajGreen.setLastName("Green");
