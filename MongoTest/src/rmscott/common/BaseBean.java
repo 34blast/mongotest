@@ -3,11 +3,13 @@
  */
 package rmscott.common;
 
+import java.io.Serializable;
+
 /**
  * @author rmscott
  *
  */
-public class BaseBean implements java.io.Serializable {
+public class BaseBean implements Serializable, Comparable<BaseBean> {
 	 
 	private static final long serialVersionUID = -3081305268881713251L;
 	
@@ -58,8 +60,35 @@ public class BaseBean implements java.io.Serializable {
 	}
 
 	@Override
+	public int compareTo(BaseBean pOther) {
+		final int EQUAL = 0;
+
+		// this optimization is usually worthwhile, and can
+		// always be added
+		if (this == pOther)
+			return EQUAL;
+
+		int comparison = this._id.compareTo(pOther._id);
+		if (comparison != EQUAL)
+			return comparison;
+
+		// all comparisons have yielded equality
+		// verify that compareTo is consistent with equals (optional)
+		assert this.equals(pOther) : "compareTo inconsistent with equals.";
+
+		return EQUAL;
+
+	} // end of compareTo
+
+	@Override
 	public String toString() {
-		return "BaseBean [_id=" + _id + "]";
-	}
+		StringBuffer sb = new StringBuffer("BaseBean [_id=");
+		sb.append(_id);
+		sb.append("BaseBean [className=");
+		sb.append(this.getClass().getName());
+		sb.append("]");
+		return sb.toString();
+		
+	} // end of toString()
 
 }

@@ -3,18 +3,18 @@
  */
 package rmscott.test;
 
-import rmscott.common.Player;
+import java.util.Arrays;
+import java.util.Comparator;
+
 import rmscott.football.FootballPosition;
+import rmscott.football.Player;
+import rmscott.football.PlayerComparator;
 
 /**
  * @author rmscott
  *
  */
 public class PlayerTest {
-
-	static protected Player ajGreen = null;
-	static protected Player odellBeckum = null;
-	static protected Player dezBryant = null;
 
 	/**
 	 * Constructor for the class
@@ -23,27 +23,11 @@ public class PlayerTest {
 
 	}
 
-	public void testAddPlayers() {
+	static public Player[] getInitialPlayers() {
 
-	} // end of testAddPlayers
-
-	public void testReadPlayers() {
-
-	} // end of testReadPlayers
-
-	public void testRanklayers() {
-
-	} // end of testRankPlayers
-
-	public void testUpdatePlayers() {
-
-	} // end of testUpdatePlayers()
-
-	public void testDeletePlayers() {
-
-	} // end of testDeletePlayers
-
-	static public void setUp() {
+		Player ajGreen = null;
+		Player odellBeckum = null;
+		Player dezBryant = null;
 
 		odellBeckum = new Player();
 		odellBeckum.setFirstName("Odell");
@@ -67,7 +51,38 @@ public class PlayerTest {
 		ajGreen.setRanking((float) 91.3);
 		ajGreen.setPosition(FootballPosition.WR);
 
-	} // end of setup
+		Player[] players = new Player[3];
+		players[0] = odellBeckum;
+		players[1] = dezBryant;
+		players[2] = ajGreen;
+
+		return players;
+
+	} // end of getInitialPlayers
+
+	static public Player[] orderByRankingCompareTo(Player[] pPlayers) {
+		Arrays.sort(pPlayers);
+		return pPlayers;
+	}
+
+	static public Player[] orderByRankingComparator(Player[] pPlayers) {
+
+		Arrays.sort(pPlayers, new PlayerComparator());
+		return pPlayers;
+	}
+
+	static public Player[] orderByRankingInline(Player[] pPlayers) {
+
+		Arrays.sort(pPlayers, new Comparator<Player>() {
+			public int compare(Player pOne, Player pTwo) {
+				Float one = new Float(pOne.getRanking());
+				Float two = new Float(pTwo.getRanking());
+				return one.compareTo(two);
+			}
+		});
+
+		return pPlayers;
+	}
 
 	/**
 	 * @param args
@@ -76,15 +91,38 @@ public class PlayerTest {
 		System.out.println("PlayerCRUDTest.main() : ..... begin execution ..... ");
 		System.out.println();
 
-		PlayerTest.setUp();
-		PlayerTest test = new PlayerTest();
+		Player[] players = PlayerTest.getInitialPlayers();
 
-		System.out.println(odellBeckum);
-		System.out.println();
-		System.out.println(ajGreen);
-		System.out.println();
-		System.out.println(dezBryant);
-		System.out.println();
+		System.out.println("Original Player List");
+		System.out.println("---------------------------------------------------------------");
+		for (Player player : players) {
+			System.out.println(player);
+			System.out.println();
+		}
+
+		System.out.println("CompareTo Player List");
+		System.out.println("---------------------------------------------------------------");
+		players = PlayerTest.orderByRankingCompareTo(players);
+		for (Player player : players) {
+			System.out.println(player);
+			System.out.println();
+		}
+
+		System.out.println("Comparator Player List");
+		System.out.println("---------------------------------------------------------------");
+		players = PlayerTest.orderByRankingComparator(players);
+		for (Player player : players) {
+			System.out.println(player);
+			System.out.println();
+		}
+
+		System.out.println("inline Player List");
+		System.out.println("---------------------------------------------------------------");
+		players = PlayerTest.orderByRankingInline(players);
+		for (Player player : players) {
+			System.out.println(player);
+			System.out.println();
+		}
 
 		System.out.println("PlayerTEst.main() : ..... ending execution ..... ");
 		System.exit(0);

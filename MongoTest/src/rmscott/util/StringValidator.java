@@ -862,4 +862,22 @@ public class StringValidator {
 
 	} // end of addSpaces
 
+	/**
+	 * Compares 2 String and handles the case where one or both are null
+	 * @param pOne
+	 * @param pTwo
+	 * @return int
+	 */
+	public static int compareToIgnoreCase(final String pOne, final String pTwo) {
+	    if (pOne == null || pTwo == null) {
+		    if (pOne == null && pTwo == null) {
+		        return 0;
+		    } else {
+		        return (pOne == null) ? -1 : 1;
+		    }
+	    }
+
+	    return pOne.compareToIgnoreCase(pTwo);
+	}
+
 }

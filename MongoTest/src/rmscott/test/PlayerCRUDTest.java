@@ -3,8 +3,8 @@
  */
 package rmscott.test;
 
-import rmscott.common.Player;
 import rmscott.football.FootballPosition;
+import rmscott.football.Player;
 
 /**
  * @author rmscott
