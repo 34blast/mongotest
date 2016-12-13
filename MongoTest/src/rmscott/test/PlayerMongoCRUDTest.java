@@ -3,6 +3,16 @@
  */
 package rmscott.test;
 
+import java.sql.Date;
+
+import org.bson.Document;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.util.JSON;
+
 import rmscott.football.FootballPosition;
 import rmscott.football.Player;
 
@@ -11,10 +21,46 @@ import rmscott.football.Player;
  *
  */
 public class PlayerMongoCRUDTest {
-	
-	public void testAddPlayers() {
+	static public String FANTASY_DB_NAME = "fantasy";
+	static public String PLAYER_COL_NAME = "player";
+	private MongoClient mongoClient = null;
+	private MongoDatabase db = null;
 
-	} // end of testAddPlayers
+	public PlayerMongoCRUDTest() {
+		this.initialize();
+	}
+
+	protected void initialize() {
+		mongoClient = new MongoClient();
+		db = mongoClient.getDatabase(PlayerMongoCRUDTest.FANTASY_DB_NAME);
+
+	}
+
+	protected void finalize() throws Throwable {
+		try {
+			mongoClient.close(); // close open files
+		} finally {
+			super.finalize();
+		}
+	}
+
+	public void testAddPlayers() {
+		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME); 
+		
+		BasicDBObject document = new BasicDBObject();
+		/*
+		Gson gson = new Gson();
+		BasicDBObject obj = (BasicDBObject)JSON.parse(gson.toJson(emp));
+
+		document.put("name", "mkyong");
+		document.put("age", 30);
+		document.put("createdDate", new Date());
+		table.insert(document);
+		db.createCollection(player);
+		*/
+	} // end
+																																																																																		// of
+																																																																																		// testAddPlayers
 
 	public void testReadPlayers() {
 
@@ -31,6 +77,21 @@ public class PlayerMongoCRUDTest {
 	public void testDeletePlayers() {
 
 	} // end of testDeletePlayers
+
+	public Player getOnePlayer() {
+
+		Player odellBeckum = null;
+
+		odellBeckum = new Player();
+		odellBeckum.setFirstName("Odell");
+		odellBeckum.setLastName("Beckum");
+		odellBeckum.setNotes("Elite Reciever,");
+		odellBeckum.setRanking((float) 84.3);
+		odellBeckum.setPosition(FootballPosition.WR);
+
+		return odellBeckum;
+
+	}
 
 	public Player[] getInitialPlayers() {
 
@@ -59,12 +120,12 @@ public class PlayerMongoCRUDTest {
 		ajGreen.setNotes("Elite Reciever,");
 		ajGreen.setRanking((float) 91.3);
 		ajGreen.setPosition(FootballPosition.WR);
-		
+
 		Player[] players = new Player[3];
 		players[0] = odellBeckum;
 		players[1] = dezBryant;
 		players[2] = ajGreen;
-		
+
 		return players;
 
 	} // end of getInitialPlayers
@@ -75,19 +136,14 @@ public class PlayerMongoCRUDTest {
 	public static void main(String[] args) {
 		System.out.println("PlayerMongoCRUDTest.main() : ..... begin execution ..... ");
 		System.out.println();
-		
-		Player odellBeckum = new Player();
-		odellBeckum.setFirstName("Odell");
-		odellBeckum.setLastName("Beckum");
-		odellBeckum.setNotes("Elite Reciever,");
-		odellBeckum.setRanking((float) 84.3);
-		odellBeckum.setPosition(FootballPosition.WR);
-		
-		System.out.println(odellBeckum);
+
+		PlayerMongoCRUDTest test = new PlayerMongoCRUDTest();
+
 		System.out.println();
-		
+
 		System.out.println("PlayerMongoCRUDTest.main() : ..... ending execution ..... ");
-		System.exit(0);;
+		System.exit(0);
+		;
 
 	}
 
