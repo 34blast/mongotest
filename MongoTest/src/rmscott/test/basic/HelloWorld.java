@@ -1,7 +1,7 @@
 /**
  * 
  */
-package rmscott.test;
+package rmscott.test.basic;
 
 /**
  * @author rmscott

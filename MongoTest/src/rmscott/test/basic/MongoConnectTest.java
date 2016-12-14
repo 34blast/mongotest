@@ -1,7 +1,7 @@
 /**
  * RMSCOTT Prototype
  */
-package rmscott.test;
+package rmscott.test.basic;
 
 import org.bson.Document;
 

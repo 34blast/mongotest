@@ -13,7 +13,7 @@ public class BaseBean implements Serializable, Comparable<BaseBean> {
 	 
 	private static final long serialVersionUID = -3081305268881713251L;
 	
-	String _id = null;
+	private String _id = null;
 
 	/**
 	 * Constructor for this class

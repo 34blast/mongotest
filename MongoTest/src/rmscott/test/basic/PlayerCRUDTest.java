@@ -1,7 +1,7 @@
 /**
  * RMSCOTT Prototype
  */
-package rmscott.test;
+package rmscott.test.basic;
 
 import rmscott.football.FootballPosition;
 import rmscott.football.Player;
