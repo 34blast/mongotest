@@ -9,6 +9,7 @@ import java.util.Comparator;
 import rmscott.football.FootballPosition;
 import rmscott.football.Player;
 import rmscott.football.PlayerComparator;
+import rmscott.football.Team;
 
 /**
  * @author rmscott
@@ -25,6 +26,19 @@ public class PlayerTest {
 
 	static public Player[] getInitialPlayers() {
 
+		Team giants = new Team();
+		giants.setNameName("Giants");
+		giants.set_id("1");
+		
+		Team cowboys = new Team();
+		cowboys.setNameName("Cowboys");
+		cowboys.set_id("2");
+		
+		Team bengals = new Team();
+		bengals.setNameName("Bengals");
+		bengals.set_id("3");
+		
+		
 		Player ajGreen = null;
 		Player odellBeckum = null;
 		Player dezBryant = null;
@@ -32,24 +46,27 @@ public class PlayerTest {
 		odellBeckum = new Player();
 		odellBeckum.setFirstName("Odell");
 		odellBeckum.setLastName("Beckum");
-		odellBeckum.setNotes("Elite Reciever,");
+		odellBeckum.setNotes("Elite Reciever");
 		odellBeckum.setRanking((float) 84.3);
 		odellBeckum.setPosition(FootballPosition.WR);
+		odellBeckum.setTeam(giants);
 
 		dezBryant = new Player();
 		dezBryant.setFirstName("Dez");
 		dezBryant.setLastName("Bryant");
-		dezBryant.setNotes("Elite Reciever,");
+		dezBryant.setNotes("Elite Reciever");
 		dezBryant.setRanking((float) 85.3);
 		dezBryant.setPosition(FootballPosition.WR);
+		dezBryant.setTeam(cowboys);
 
 		ajGreen = new Player();
 		ajGreen.setFirstName("Adriel");
 		ajGreen.setMiddleName("Jeremiah");
 		ajGreen.setLastName("Green");
-		ajGreen.setNotes("Elite Reciever,");
+		ajGreen.setNotes("Elite Reciever");
 		ajGreen.setRanking((float) 91.3);
 		ajGreen.setPosition(FootballPosition.WR);
+		ajGreen.setTeam(bengals);
 
 		Player[] players = new Player[3];
 		players[0] = odellBeckum;
@@ -77,7 +94,7 @@ public class PlayerTest {
 			public int compare(Player pOne, Player pTwo) {
 				Float one = new Float(pOne.getRanking());
 				Float two = new Float(pTwo.getRanking());
-				return one.compareTo(two);
+				return two.compareTo(one);
 			}
 		});
 

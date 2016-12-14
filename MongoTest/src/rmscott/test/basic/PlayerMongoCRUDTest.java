@@ -4,6 +4,7 @@
 package rmscott.test.basic;
 
 import static com.mongodb.client.model.Filters.ne;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -24,6 +26,7 @@ import com.mongodb.client.result.UpdateResult;
 
 import rmscott.football.FootballPosition;
 import rmscott.football.Player;
+import rmscott.football.Team;
 
 /**
  * @author rmscott
@@ -71,11 +74,44 @@ public class PlayerMongoCRUDTest {
 				System.out.println(jsonProcessingExc);
 			}
 			// Insert the document
-			Document doc = Document.parse(jsonInString);
-			playerCollection.insertOne(doc);
+			try {
+				Document doc = Document.parse(jsonInString);
+				playerCollection.insertOne(doc);
+			} catch (MongoException mongoExc) {
+				System.err.println(mongoExc);
+				throw mongoExc;
+			}
 		}
 
 	} // end of testAddPlayers
+
+	public void testAddDuplicate() {
+		System.out.println();
+		System.out.println("testAddDuplicate ...................");
+		System.out.println();
+
+		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
+
+		Player player = PlayerMongoCRUDTest.getOnePlayer();
+		String jsonInString = null;
+		// Get the object as JSON
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			jsonInString = mapper.writeValueAsString(player);
+		} catch (JsonProcessingException jsonProcessingExc) {
+			System.out.println(jsonProcessingExc);
+		}
+		// Insert the document
+		try {
+			Document doc = Document.parse(jsonInString);
+			playerCollection.insertOne(doc);
+			System.err.println("ERROR should have got exception");
+		} catch (MongoException mongoExc) {
+			System.out.println("class name of exception " + mongoExc.getClass().getName());
+			System.out.println("Pass: received Mongo db exception as expected");
+		}
+
+	} // end of testAddDuplicate
 
 	public void testReadAllPlayers() {
 		System.out.println();
@@ -83,10 +119,10 @@ public class PlayerMongoCRUDTest {
 
 		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
 		System.out.println("Player Collection Count : " + playerCollection.count());
+		System.out.println();
 		FindIterable<Document> foundCollection = playerCollection.find();
 
 		for (Document doc : foundCollection) {
-			System.out.println();
 			System.out.print("Guts of collection : Player");
 			System.out.println("--------------------------------------------------------------");
 			String playerJson = doc.toJson();
@@ -100,11 +136,45 @@ public class PlayerMongoCRUDTest {
 				ioExc.printStackTrace();
 			}
 			System.out.println(doc.toJson());
-			System.out.println(player.toString());			System.out.println();
+			System.out.println(player.toString());
+			System.out.println();
 		}
 		System.out.println();
 
 	} // end of testReadAllPlayers
+
+	public void testReadGiantsPlayers() {
+		System.out.println();
+		System.out.println("testReadGiantsPlayers ...................");
+
+		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
+		BasicDBObject fields = new BasicDBObject();
+		
+		// fields.put("lastName", "Beckum");
+		fields.put("team.teamName", "Giants");
+		FindIterable<Document> foundCollection = playerCollection.find(fields);
+
+
+		for (Document doc : foundCollection) {
+			System.out.print("Guts of collection : Player");
+			System.out.println("--------------------------------------------------------------");
+			String playerJson = doc.toJson();
+			ObjectMapper mapper = new ObjectMapper();
+			Player player = null;
+			try {
+				player = mapper.readValue(playerJson, Player.class);
+			} catch (IOException ioExc) {
+				System.err.println("Error converting from JSON to Player");
+				System.err.println(ioExc);
+				ioExc.printStackTrace();
+			}
+			System.out.println(doc.toJson());
+			System.out.println(player.toString());
+			System.out.println();
+		}
+		System.out.println();
+
+	} // end of testReadGiantsPlayers
 
 	public void testRanklayers() {
 		System.out.println();
@@ -131,10 +201,10 @@ public class PlayerMongoCRUDTest {
 				ioExc.printStackTrace();
 			}
 			System.out.println(doc.toJson());
-			System.out.println(player.toString());			System.out.println();
+			System.out.println(player.toString());
+			System.out.println();
 		}
 		System.out.println();
-
 
 	} // end of testRankPlayers
 
@@ -186,6 +256,9 @@ public class PlayerMongoCRUDTest {
 	} // end of testDeleteAllPlayers
 
 	static public Player getOnePlayer() {
+		Team giants = new Team();
+		giants.setNameName("Giants");
+		giants.set_id("1");
 
 		Player odellBeckum = null;
 
@@ -196,6 +269,7 @@ public class PlayerMongoCRUDTest {
 		odellBeckum.setNotes("Elite Reciever");
 		odellBeckum.setRanking((float) 84.3);
 		odellBeckum.setPosition("slot");
+		odellBeckum.setTeam(giants);
 
 		return odellBeckum;
 
@@ -203,26 +277,36 @@ public class PlayerMongoCRUDTest {
 
 	static public Player[] getInitialPlayers() {
 
-		Player ajGreen = null;
-		Player odellBeckum = null;
-		Player dezBryant = null;
+		Team giants = new Team();
+		giants.setNameName("Giants");
+		giants.set_id("1");
 
-		odellBeckum = new Player();
+		Team cowboys = new Team();
+		cowboys.setNameName("Cowboys");
+		cowboys.set_id("2");
+
+		Team bengals = new Team();
+		bengals.setNameName("Bengals");
+		bengals.set_id("3");
+
+		Player odellBeckum = new Player();
 		odellBeckum.set_id("1");
 		odellBeckum.setFirstName("Odell");
 		odellBeckum.setLastName("Beckum");
 		odellBeckum.setNotes("Elite Reciever");
 		odellBeckum.setRanking((float) 84.3);
+		odellBeckum.setTeam(giants);
 
-		dezBryant = new Player();
+		Player dezBryant = new Player();
 		dezBryant.set_id("2");
 		dezBryant.setFirstName("Dez");
 		dezBryant.setLastName("Bryant");
 		dezBryant.setNotes("Elite Reciever");
 		dezBryant.setRanking((float) 85.3);
 		dezBryant.setPosition("slot");
+		dezBryant.setTeam(cowboys);
 
-		ajGreen = new Player();
+		Player ajGreen = new Player();
 		ajGreen.set_id("3");
 		ajGreen.setFirstName("Adriel");
 		ajGreen.setMiddleName("Jeremiah");
@@ -230,11 +314,21 @@ public class PlayerMongoCRUDTest {
 		ajGreen.setNotes("Elite Reciever");
 		ajGreen.setRanking((float) 91.3);
 		ajGreen.setPosition(FootballPosition.WR);
+		ajGreen.setTeam(bengals);
 
-		Player[] players = new Player[3];
+		Player sheppard = new Player();
+		sheppard.set_id("4");
+		sheppard.setFirstName("Sterling");
+		sheppard.setLastName("Sheppard");
+		sheppard.setNotes("Complimentory receiver");
+		sheppard.setRanking((float) 55.3);
+		sheppard.setTeam(giants);
+
+		Player[] players = new Player[4];
 		players[0] = odellBeckum;
 		players[1] = dezBryant;
 		players[2] = ajGreen;
+		players[3] = sheppard;
 
 		return players;
 
@@ -250,15 +344,13 @@ public class PlayerMongoCRUDTest {
 		PlayerMongoCRUDTest test = new PlayerMongoCRUDTest();
 		test.testDeleteAllPlayers();
 		test.testAddPlayers();
+		test.testAddDuplicate();
 		test.testReadAllPlayers();
+		test.testReadGiantsPlayers();
 		test.testRanklayers();
 		test.testUpdatePlayers();
 		test.testReadAllPlayers();
 		test.testDeleteOnePlayer();
-		test.testReadAllPlayers();
-		test.testDeleteAllPlayers();
-		test.testReadAllPlayers();
-
 		System.out.println();
 
 		System.out.println("PlayerMongoCRUDTest.main() : ..... ending execution ..... ");

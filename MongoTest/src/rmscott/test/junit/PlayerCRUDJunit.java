@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -35,6 +36,7 @@ import com.mongodb.client.result.UpdateResult;
 
 import rmscott.football.FootballPosition;
 import rmscott.football.Player;
+import rmscott.football.Team;
 import rmscott.test.basic.PlayerMongoCRUDTest;
 
 /**
@@ -82,6 +84,8 @@ public class PlayerCRUDJunit {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
+		playerCollection.deleteMany(new Document());
 	}
 
 	/**
@@ -107,7 +111,7 @@ public class PlayerCRUDJunit {
 			ObjectMapper mapper = new ObjectMapper();
 			jsonInString = mapper.writeValueAsString(player);
 		} catch (JsonProcessingException jsonProcessingExc) {
-			System.out.println(jsonProcessingExc);
+			fail ("Failed to convert JSON to object");
 		}
 		// Insert the document
 		Document doc = Document.parse(jsonInString);
@@ -140,6 +144,22 @@ public class PlayerCRUDJunit {
 		assertEquals("lastName is not equal", player.getLastName(), returnedPlayer.getLastName());
 		assertEquals("middleName is not equal", player.getMiddleName(), returnedPlayer.getMiddleName());
 		assertEquals("nickName is not equal", player.getNickName(), returnedPlayer.getNickName());
+
+		// Try to insert a duplicate document
+		try {
+			mapper = new ObjectMapper();
+			jsonInString = mapper.writeValueAsString(player);
+		} catch (JsonProcessingException jsonProcessingExc) {
+			System.out.println(jsonProcessingExc);
+		}
+		// Insert the document
+		try {
+			doc = Document.parse(jsonInString);
+			playerCollection.insertOne(doc);
+			fail("Error inserted duplicate row");
+		} catch (MongoException mongoExc) {
+			// Passed as Exception is expected since inserting duplicate row
+		}
 
 		// Update a field
 		player = returnedPlayer;
@@ -222,6 +242,25 @@ public class PlayerCRUDJunit {
 				fail("Player came back with invalid ID");
 			}
 		}
+		
+		// Get all Giants players and verify
+		playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
+		BasicDBObject fields = new BasicDBObject();
+		fields.put("team.teamName", "Giants");
+		FindIterable<Document> foundCollection = playerCollection.find(fields);
+		for (Document doc : foundCollection) {
+			String playerJson = doc.toJson();
+			ObjectMapper mapper = new ObjectMapper();
+			Player player = null;
+			try {
+				player = mapper.readValue(playerJson, Player.class);
+			} catch (IOException ioExc) {
+				fail("Error mapping from JSON to object");
+			}
+			Team team = player.getTeam();
+			assertEquals("Team Name cam back incorrect", team.getTeamName(), "Giants");
+		}
+
 		// Update Position on 2 rows
 		playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
 		// change all positions not equal to WR to wide receiver
@@ -259,7 +298,7 @@ public class PlayerCRUDJunit {
 				ObjectMapper mapper = new ObjectMapper();
 				jsonInString = mapper.writeValueAsString(player);
 			} catch (JsonProcessingException jsonProcessingExc) {
-				System.out.println(jsonProcessingExc);
+				fail("Failed to map object from JSON");
 			}
 			// Insert the document
 			Document doc = Document.parse(jsonInString);
@@ -280,9 +319,7 @@ public class PlayerCRUDJunit {
 			try {
 				player = mapper.readValue(playerJson, Player.class);
 			} catch (IOException ioExc) {
-				System.err.println("Error converting from JSON to Player");
-				System.err.println(ioExc);
-				ioExc.printStackTrace();
+				fail("Failed to convert JSON to object");
 			}
 			float rank = player.getRanking();
 			assertTrue("Ranking not in sorted order by highest first", (previousRank > rank));
@@ -293,42 +330,54 @@ public class PlayerCRUDJunit {
 
 	static public Player getOdellBeckum() {
 
-		Player odellBeckum = null;
+		Team giants = new Team();
+		giants.setNameName("Giants");
+		giants.set_id("1");
 
-		odellBeckum = new Player();
+		Player odellBeckum = new Player();
 		odellBeckum.set_id(PlayerCRUDJunit.ODELL_BECKUM_ID);
 		odellBeckum.setFirstName("Odell");
 		odellBeckum.setLastName("Beckum");
 		odellBeckum.setNotes("Elite Reciever");
 		odellBeckum.setRanking((float) 84.3);
 		odellBeckum.setPosition("slot");
+		odellBeckum.setTeam(giants);
 
 		return odellBeckum;
 
 	}
 
 	static public Player[] getInitialPlayers() {
+		Team giants = new Team();
+		giants.setNameName("Giants");
+		giants.set_id("1");
 
-		Player ajGreen = null;
-		Player odellBeckum = null;
-		Player dezBryant = null;
+		Team cowboys = new Team();
+		cowboys.setNameName("Cowboys");
+		cowboys.set_id("2");
 
-		odellBeckum = new Player();
+		Team bengals = new Team();
+		bengals.setNameName("Bengals");
+		bengals.set_id("3");
+
+		Player odellBeckum = new Player();
 		odellBeckum.set_id(PlayerCRUDJunit.ODELL_BECKUM_ID);
 		odellBeckum.setFirstName("Odell");
 		odellBeckum.setLastName("Beckum");
 		odellBeckum.setNotes("Elite Reciever");
 		odellBeckum.setRanking((float) 84.3);
+		odellBeckum.setTeam(giants);
 
-		dezBryant = new Player();
+		Player dezBryant = new Player();
 		dezBryant.set_id(PlayerCRUDJunit.DEZ_BRYANT_ID);
 		dezBryant.setFirstName("Dez");
 		dezBryant.setLastName("Bryant");
 		dezBryant.setNotes("Elite Reciever");
 		dezBryant.setRanking((float) 85.3);
 		dezBryant.setPosition("slot");
+		dezBryant.setTeam(cowboys);
 
-		ajGreen = new Player();
+		Player ajGreen = new Player();
 		ajGreen.set_id(PlayerCRUDJunit.AJ_GREEN_ID);
 		ajGreen.setFirstName("Adriel");
 		ajGreen.setMiddleName("Jeremiah");
@@ -336,6 +385,7 @@ public class PlayerCRUDJunit {
 		ajGreen.setNotes("Elite Reciever");
 		ajGreen.setRanking((float) 91.3);
 		ajGreen.setPosition(FootballPosition.WR);
+		ajGreen.setTeam(bengals);
 
 		Player[] players = new Player[3];
 		players[0] = odellBeckum;

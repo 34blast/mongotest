@@ -13,6 +13,7 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 	private String position = null;
 	private float ranking = new Float(0.0).floatValue();
 	private String notes = null;
+	private Team team = null;
 
 	public String getPosition() {
 		return position;
@@ -38,6 +39,15 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 		this.notes = notes;
 	}
 
+	
+	public Team getTeam() {
+		return team;
+	}
+
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -45,6 +55,7 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
 		result = prime * result + ((position == null) ? 0 : position.hashCode());
 		result = prime * result + Float.floatToIntBits(ranking);
+		result = prime * result + ((team == null) ? 0 : team.hashCode());
 		return result;
 	}
 
@@ -68,6 +79,11 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 		} else if (!position.equals(other.position))
 			return false;
 		if (Float.floatToIntBits(ranking) != Float.floatToIntBits(other.ranking))
+			return false;
+		if (team == null) {
+			if (other.team != null)
+				return false;
+		} else if (!team.equals(other.team))
 			return false;
 		return true;
 	}
@@ -97,7 +113,7 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 
 		Float oneRank = new Float(this.getRanking());
 		Float twoRank = new Float(otherPlayer.getRanking());
-		int comparision = oneRank.compareTo(twoRank);
+		int comparision = twoRank.compareTo(oneRank);
 		if (comparision != EQUAL) {
 			return comparision;
 		}
@@ -123,7 +139,6 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 		return EQUAL;
 
 	} // end of compareTo
-
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer("Player [position=");
@@ -136,6 +151,9 @@ public class Player extends Person implements Serializable, Comparable<BaseBean>
 		sb.append(StringValidator.EOL);
 		sb.append("    ");
 		sb.append(super.toString());
+		sb.append(StringValidator.EOL);
+		sb.append("    ");
+		sb.append(team.toString());
 
 		return sb.toString();
 	}
