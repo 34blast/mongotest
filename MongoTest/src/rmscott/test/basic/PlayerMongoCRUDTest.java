@@ -6,8 +6,11 @@ package rmscott.test.basic;
 import static com.mongodb.client.model.Filters.ne;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +19,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.UpdateResult;
 
 import rmscott.football.FootballPosition;
@@ -78,8 +82,8 @@ public class PlayerMongoCRUDTest {
 		System.out.println("testReadAllPlayers ...................");
 
 		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
-		FindIterable<Document> foundCollection = playerCollection.find();
 		System.out.println("Player Collection Count : " + playerCollection.count());
+		FindIterable<Document> foundCollection = playerCollection.find();
 
 		for (Document doc : foundCollection) {
 			System.out.println();
@@ -106,6 +110,31 @@ public class PlayerMongoCRUDTest {
 		System.out.println();
 		System.out.println("testRanklayers ...................");
 		System.out.println();
+		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
+		List<String> fieldNames = new ArrayList<String>();
+		fieldNames.add("ranking");
+		Bson rankingDescOrderFilter = Sorts.descending(fieldNames);
+		FindIterable<Document> foundCollection = playerCollection.find().sort(rankingDescOrderFilter);
+
+		for (Document doc : foundCollection) {
+			System.out.println();
+			System.out.print("Guts of collection : Player");
+			System.out.println("--------------------------------------------------------------");
+			String playerJson = doc.toJson();
+			ObjectMapper mapper = new ObjectMapper();
+			Player player = null;
+			try {
+				player = mapper.readValue(playerJson, Player.class);
+			} catch (IOException ioExc) {
+				System.err.println("Error converting from JSON to Player");
+				System.err.println(ioExc);
+				ioExc.printStackTrace();
+			}
+			System.out.println(doc.toJson());
+			System.out.println(player.toString());			System.out.println();
+		}
+		System.out.println();
+
 
 	} // end of testRankPlayers
 
@@ -123,9 +152,9 @@ public class PlayerMongoCRUDTest {
 
 	} // end of testUpdatePlayers()
 
-	public void testDeletePlayers() {
+	public void testDeleteOnePlayer() {
 		System.out.println();
-		System.out.println("testDeletePlayers ...................");
+		System.out.println("testDeleteOnePlayer ...................");
 		System.out.println();
 		MongoCollection<Document> playerCollection = db.getCollection(PlayerMongoCRUDTest.PLAYER_COL_NAME);
 
@@ -219,12 +248,13 @@ public class PlayerMongoCRUDTest {
 		System.out.println();
 
 		PlayerMongoCRUDTest test = new PlayerMongoCRUDTest();
-		test.testReadAllPlayers();
+		test.testDeleteAllPlayers();
 		test.testAddPlayers();
 		test.testReadAllPlayers();
+		test.testRanklayers();
 		test.testUpdatePlayers();
 		test.testReadAllPlayers();
-		test.testDeletePlayers();
+		test.testDeleteOnePlayer();
 		test.testReadAllPlayers();
 		test.testDeleteAllPlayers();
 		test.testReadAllPlayers();
